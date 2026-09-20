@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EduPath — your skill-gap agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EFF1EC; --surface:#FFFFFF; --surface-2:#F5F6F2;
+    --ink:#1E2422; --ink-soft:#57625C; --line:#CBD2C9;
+    --accent:#B8531F; --accent-ink:#FFFFFF;
+    --acquired:#2F6F4E; --acquired-bg:#E4EEE7;
+    --progress:#A6721E; --progress-bg:#F3E9D6;
+    --remaining:#7C857E; --remaining-bg:#E9EBE6;
+    --font-display:'Fraunces',serif; --font-body:'IBM Plex Sans',system-ui,sans-serif;
+    --radius:3px;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12161A; --surface:#1A2024; --surface-2:#20272B;
+      --ink:#ECEFEA; --ink-soft:#A9B2AC; --line:#334039;
+      --accent:#E39762; --accent-ink:#1A2024;
+      --acquired:#5CAA80; --acquired-bg:#1E2E26;
+      --progress:#D7A855; --progress-bg:#332A18;
+      --remaining:#8E978F; --remaining-bg:#232A26;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12161A; --surface:#1A2024; --surface-2:#20272B;
+    --ink:#ECEFEA; --ink-soft:#A9B2AC; --line:#334039;
+    --accent:#E39762; --accent-ink:#1A2024;
+    --acquired:#5CAA80; --acquired-bg:#1E2E26;
+    --progress:#D7A855; --progress-bg:#332A18;
+    --remaining:#8E978F; --remaining-bg:#232A26;
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px; margin:0 auto; padding:28px 20px 64px;}
+  header.top{margin-bottom:28px;}
+  .wordmark{
+    font-family:var(--font-display); font-weight:600; font-size:2rem;
+    letter-spacing:-0.01em; margin:0 0 4px;
+  }
+  .tagline{color:var(--ink-soft); font-size:0.95rem; margin:0; max-width:46ch;}
+
+  .panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; margin-bottom:16px;
+  }
+  .panel h2{
+    font-family:var(--font-display); font-weight:500; font-size:1.25rem;
+    margin:0 0 4px;
+  }
+  .panel .sub{color:var(--ink-soft); font-size:0.88rem; margin:0 0 16px;}
+
+  label{display:block; font-size:0.82rem; color:var(--ink-soft); margin:14px 0 5px;}
+  label:first-of-type{margin-top:0;}
+  select, input[type=text], textarea{
+    width:100%; font-family:var(--font-body); font-size:0.95rem; color:var(--ink);
+    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:10px 11px; resize:vertical;
+  }
+  select:focus, input:focus, textarea:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  textarea{min-height:64px;}
+
+  button{
+    font-family:var(--font-body); font-weight:600; font-size:0.9rem; cursor:pointer;
+    border-radius:var(--radius); border:1px solid transparent; padding:11px 18px;
+  }
+  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .btn-primary{background:var(--accent); color:var(--accent-ink); width:100%; margin-top:18px;}
+  .btn-ghost{background:transparent; color:var(--ink-soft); border-color:var(--line); font-weight:500;}
+  .btn-small{background:transparent; color:var(--accent); border:1px solid var(--accent); font-size:0.82rem; padding:7px 12px;}
+
+  .elev-bar{height:8px; background:var(--surface-2); border:1px solid var(--line); border-radius:99px; overflow:hidden; margin:10px 0 6px;}
+  .elev-fill{height:100%; background:var(--acquired); transition:width .4s ease;}
+  .elev-label{font-size:0.82rem; color:var(--ink-soft);}
+
+  .trail{position:relative; margin-top:10px;}
+  .waypoint{position:relative; padding-left:34px; padding-bottom:22px;}
+  .waypoint::before{ /* connecting line */
+    content:""; position:absolute; left:9px; top:22px; bottom:-2px; width:1px; background:var(--line);
+  }
+  .waypoint:last-child::before{display:none;}
+  .marker{
+    position:absolute; left:0; top:1px; width:20px; height:20px; border-radius:50%;
+    border:2px solid var(--remaining); background:var(--surface);
+    display:flex; align-items:center; justify-content:center; font-size:0.68rem; font-weight:600;
+  }
+  .waypoint.acquired .marker{border-color:var(--acquired); background:var(--acquired); color:var(--acquired-bg);}
+  .waypoint.mastered .marker{border-color:var(--acquired); background:var(--acquired); color:var(--acquired-bg);}
+  .waypoint.inprogress .marker{border-color:var(--progress); color:var(--progress);}
+
+  .wp-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; cursor:pointer;}
+  .wp-title{font-weight:600; font-size:0.98rem;}
+  .wp-week{font-size:0.76rem; color:var(--ink-soft); white-space:nowrap;}
+  .wp-status{
+    display:inline-block; font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:99px;
+    margin-top:5px;
+  }
+  .wp-status.acquired-tag{background:var(--acquired-bg); color:var(--acquired);}
+  .wp-status.progress-tag{background:var(--progress-bg); color:var(--progress);}
+  .wp-status.remaining-tag{background:var(--remaining-bg); color:var(--remaining);}
+
+  .wp-body{margin-top:12px; display:none;}
+  .waypoint.open .wp-body{display:block;}
+  .checkitem{display:flex; gap:9px; align-items:flex-start; font-size:0.88rem; margin-bottom:9px;}
+  .checkitem input{margin-top:3px; accent-color:var(--accent); width:15px; height:15px; flex:none;}
+  .checkitem.task{color:var(--ink-soft);}
+  .checkitem .lbl-tag{font-size:0.72rem; text-transform:none; color:var(--ink-soft); display:block;}
+
+  .chat-log{display:flex; flex-direction:column; gap:10px; margin-bottom:14px; max-height:none;}
+  .qa{border-left:2px solid var(--line); padding-left:10px;}
+  .qa .q{font-weight:600; font-size:0.88rem;}
+  .qa .a{color:var(--ink-soft); font-size:0.88rem; margin-top:3px; white-space:pre-line;}
+  .ask-row{display:flex; gap:8px;}
+  .ask-row input{flex:1;}
+  .chip-row{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .chip{
+    font-size:0.78rem; padding:6px 10px; border:1px solid var(--line); border-radius:99px;
+    background:var(--surface-2); color:var(--ink-soft); cursor:pointer;
+  }
+
+  .report-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;}
+  .stat{border:1px solid var(--line); border-radius:var(--radius); padding:12px 10px; text-align:left;}
+  .stat .n{font-family:var(--font-display); font-size:1.6rem; line-height:1;}
+  .stat .l{font-size:0.72rem; color:var(--ink-soft); margin-top:4px;}
+  .stat.acquired .n{color:var(--acquired);}
+  .stat.progress .n{color:var(--progress);}
+  .stat.remaining .n{color:var(--remaining);}
+
+  .next-steps li{margin-bottom:8px; font-size:0.9rem;}
+  .next-steps{padding-left:18px; margin:0;}
+
+  .empty{color:var(--ink-soft); font-size:0.9rem;}
+  .footer-row{display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
+  .hint{font-size:0.78rem; color:var(--ink-soft); margin-top:8px;}
+  ::selection{background:var(--accent); color:var(--accent-ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <p class="wordmark">EduPath</p>
+    <p class="tagline">Tell it where you're starting and where you want to go. It maps the gap, builds a week-by-week route, and adapts as you check things off.</p>
+  </header>
+
+  <section class="panel" id="setupPanel">
+    <h2>Plot your path</h2>
+    <p class="sub">Pick a target role and tell EduPath what you already know.</p>
+
+    <label for="roleSelect">Target role</label>
+    <select id="roleSelect"></select>
+
+    <label for="skillsInput">Current skills <span style="opacity:.7">(comma-separated)</span></label>
+    <input type="text" id="skillsInput" placeholder="e.g. Python, Excel, basic SQL">
+
+    <label for="resumeInput">Resume / project text — optional</label>
+    <textarea id="resumeInput" placeholder="Paste a resume or project description and EduPath will pull out skills it recognizes."></textarea>
+
+    <button class="btn-primary" id="buildBtn">Build my path</button>
+    <p class="hint" id="setupHint"></p>
+  </section>
+
+  <div id="resultArea" style="display:none;">
+
+    <section class="panel" id="pathPanel">
+      <div class="footer-row">
+        <h2 id="pathTitle">Your path</h2>
+        <button class="btn-small" id="editBtn">Edit inputs</button>
+      </div>
+      <p class="sub" id="pathSub"></p>
+      <div class="elev-bar"><div class="elev-fill" id="elevFill" style="width:0%"></div></div>
+      <p class="elev-label" id="elevLabel"></p>
+      <div class="trail" id="trail"></div>
+    </section>
+
+    <section class="panel" id="reportPanel">
+      <h2>Progress report</h2>
+      <p class="sub">Where things stand right now.</p>
+      <div class="report-grid">
+        <div class="stat acquired"><div class="n" id="statAcquired">0</div><div class="l">skills acquired</div></div>
+        <div class="stat progress"><div class="n" id="statProgress">0</div><div class="l">in progress</div></div>
+        <div class="stat remaining"><div class="n" id="statRemaining">0</div><div class="l">remaining</div></div>
+      </div>
+      <div class="sub" style="margin-bottom:8px; font-weight:600; color:var(--ink);">Recommended next steps</div>
+      <ol class="next-steps" id="nextSteps"></ol>
+    </section>
+
+    <section class="panel" id="askPanel">
+      <h2>Ask about your journey</h2>
+      <p class="sub">Ask in plain language — try one of the prompts below.</p>
+      <div class="chat-log" id="chatLog"></div>
+      <div class="ask-row">
+        <input type="text" id="askInput" placeholder="What should I learn next?">
+        <button class="btn-ghost" id="askBtn" style="border-color:var(--accent); color:var(--accent);">Ask</button>
+      </div>
+      <div class="chip-row" id="chipRow"></div>
+    </section>
+
+    <button class="btn-ghost" id="resetBtn" style="width:100%;">Reset progress</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- data ----------
+  var SKILLS = {
+    python:{name:"Python", res:["Python official tutorial (docs.python.org)","Codecademy: Learn Python 3"], task:"Write a script that cleans a messy CSV and prints summary stats.", alias:["python","py"]},
+    sql:{name:"SQL", res:["W3Schools SQL tutorial","Mode Analytics SQL School"], task:"Write five queries — joins, group by, a subquery — against a sample schema.", alias:["sql","mysql","postgres"]},
+    excel:{name:"Excel", res:["Microsoft Learn: Excel for data analysis","ExcelJet function reference"], task:"Build a pivot-table dashboard summarizing a sample sales dataset.", alias:["excel","spreadsheets"]},
+    pandas:{name:"Pandas", res:["Kaggle's Pandas micro-course","Pandas official 10-minute guide"], task:"Load a public dataset and produce three cleaned, aggregated views.", alias:["pandas"]},
+    data_visualization:{name:"Data Visualization", res:["\u201cStorytelling with Data\u201d — ch. 1-3","Matplotlib / Seaborn official gallery"], task:"Turn one dataset into three charts that each answer a different question.", alias:["data visualization","dataviz","charts","visualization"]},
+    statistics:{name:"Statistics", res:["Khan Academy: Statistics & Probability","Seeing Theory (visual stats primer)"], task:"Run a hypothesis test on a sample dataset and write the conclusion in plain language.", alias:["statistics","stats"]},
+    powerbi:{name:"Power BI", res:["Microsoft Learn: Power BI fundamentals","Power BI sample-report gallery"], task:"Build a one-page Power BI report with three visuals and a slicer.", alias:["power bi","powerbi"]},
+    communication:{name:"Communication", res:["Google Data Analytics certificate — communication module","The Pyramid Principle — summary notes"], task:"Write a one-page executive summary of a project you've already built.", alias:["communication"]},
+    critical_thinking:{name:"Critical Thinking", res:["HBR: framing the right problem","Case-interview practice sets"], task:"Take a business question and write three possible root causes before solving it.", alias:["critical thinking","problem solving"]},
+    requirements_gathering:{name:"Requirements Gathering", res:["BABOK guide — overview","IIBA elicitation techniques"], task:"Write a requirements doc for a feature based on a mock stakeholder interview.", alias:["requirements gathering","requirements"]},
+    stakeholder_management:{name:"Stakeholder Management", res:["PMI stakeholder-engagement guide","RACI matrix templates & examples"], task:"Draft a RACI matrix for a small cross-functional project.", alias:["stakeholder management","stakeholders"]},
+    process_mapping:{name:"Process Mapping", res:["Lucidchart: process-mapping basics","BPMN quick reference"], task:"Map an existing process — e.g. a college admission workflow — as a flowchart.", alias:["process mapping","bpmn"]},
+    documentation:{name:"Documentation", res:["Google developer documentation style guide","Confluence documentation templates"], task:"Write a clear one-page spec for something you've built.", alias:["documentation"]},
+    agile:{name:"Agile / Scrum", res:["Atlassian: Agile 101","scrumguides.org — the Scrum guide"], task:"Break a project into a two-week sprint backlog with story points.", alias:["agile","scrum"]},
+    machine_learning:{name:"Machine Learning", res:["Google's Machine Learning Crash Course","Andrew Ng's Machine Learning (Coursera)"], task:"Train and evaluate a simple classifier on a public dataset.", alias:["machine learning","ml"]},
+    javascript:{name:"JavaScript", res:["MDN JavaScript guide","javascript.info"], task:"Build a small interactive page using vanilla JS — no framework.", alias:["javascript","js"]},
+    react:{name:"React", res:["React official docs — Learn React","Epic React free articles (Kent C. Dodds)"], task:"Build a small multi-component app that uses state and props.", alias:["react","react.js","reactjs"]},
+    css_html:{name:"HTML & CSS", res:["MDN HTML/CSS guides","CSS-Tricks: Flexbox & Grid guides"], task:"Rebuild a simple webpage layout from a screenshot.", alias:["html","css","html/css"]},
+    git:{name:"Git & Version Control", res:["Pro Git book — ch. 1-3","GitHub Skills courses"], task:"Practice a feature-branch workflow with at least three commits and a pull request.", alias:["git","github","version control"]},
+    api_design:{name:"API Design", res:["FastAPI official tutorial","REST API design guide (Microsoft)"], task:"Build a small REST API with three endpoints and input validation.", alias:["api design","rest api","apis","fastapi"]},
+    docker:{name:"Docker", res:["Docker: official get-started guide","Docker Curriculum (free)"], task:"Containerize a small app and run it locally.", alias:["docker","containers"]},
+    cloud_basics:{name:"Cloud Fundamentals", res:["AWS Cloud Practitioner essentials","Azure Fundamentals learning path"], task:"Deploy a small app to a free-tier cloud service.", alias:["cloud","aws","azure","gcp"]},
+    data_modeling:{name:"Data Modeling", res:["Database design fundamentals (Microsoft Learn)","Star vs. snowflake schema explainer"], task:"Design a schema (ERD) for a small e-commerce system.", alias:["data modeling","database design","erd"]}
+  };
+
+  var ROLES = {
+    "Data Analyst": ["excel","sql","python","pandas","data_visualization","statistics","powerbi","communication"],
+    "Business Analyst": ["requirements_gathering","stakeholder_management","process_mapping","sql","excel","documentation","agile","communication","critical_thinking"],
+    "Data Scientist": ["python","statistics","machine_learning","pandas","sql","data_visualization","critical_thinking","communication"],
+    "Frontend Developer": ["css_html","javascript","react","git","api_design","communication"],
+    "Backend Developer": ["python","api_design","sql","git","docker","data_modeling","cloud_basics"],
+    "Product Manager": ["stakeholder_management","requirements_gathering","agile","communication","data_visualization","critical_thinking","documentation"]
+  };
+
+  // ---------- state ----------
+  var STORE_KEY = "edupath_v1";
+  var state = null;
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return null;
+  }
+  function saveState(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  function matchSkillsFromText(text){
+    var found = {};
+    var lower = (" " + text.toLowerCase() + " ").replace(/[.,;/()]/g," ");
+    Object.keys(SKILLS).forEach(function(id){
+      SKILLS[id].alias.forEach(function(a){
+        var pat = " " + a.toLowerCase() + " ";
+        if(lower.indexOf(pat) !== -1) found[id] = true;
+      });
+    });
+    return Object.keys(found);
+  }
+
+  // ---------- build ----------
+  function buildPath(){
+    var role = document.getElementById("roleSelect").value;
+    var skillsText = document.getElementById("skillsInput").value.trim();
+    var resumeText = document.getElementById("resumeInput").value.trim();
+
+    var current = {};
+    matchSkillsFromText(skillsText).forEach(function(id){ current[id] = true; });
+    matchSkillsFromText(resumeText).forEach(function(id){ current[id] = true; });
+
+    if(Object.keys(current).length === 0 && skillsText === "" && resumeText === ""){
+      document.getElementById("setupHint").textContent = "Tip: even a rough list of skills sharpens the gap analysis — but EduPath will still build a full path from scratch.";
+    }
+
+    var required = ROLES[role];
+    var checklist = {};
+    required.forEach(function(id){
+      if(!current[id]){
+        checklist[id] = {r0:false, r1:false, t:false};
+      }
+    });
+
+    state = {
+      role: role,
+      current: current,
+      required: required,
+      checklist: checklist,
+      chat: []
+    };
+    saveState();
+    render();
+  }
+
+  function skillStatus(id){
+    if(state.current[id]) return "acquired";
+    var c = state.checklist[id];
+    if(!c) return "acquired";
+    var doneCount = (c.r0?1:0)+(c.r1?1:0)+(c.t?1:0);
+    if(doneCount === 3) return "mastered";
+    if(doneCount > 0) return "inprogress";
+    return "remaining";
+  }
+
+  function gapSkills(){
+    return state.required.filter(function(id){ return !state.current[id]; });
+  }
+
+  function weekOf(index){ return Math.floor(index/2) + 1; }
+
+  // ---------- render ----------
+  function populateRoleSelect(){
+    var sel = document.getElementById("roleSelect");
+    sel.innerHTML = "";
+    Object.keys(ROLES).forEach(function(r){
+      var opt = document.createElement("option");
+      opt.value = r; opt.textContent = r;
+      sel.appendChild(opt);
+    });
+  }
+
+  function render(){
+    if(!state){
+      document.getElementById("resultArea").style.display = "none";
+      return;
+    }
+    document.getElementById("resultArea").style.display = "block";
+    document.getElementById("roleSelect").value = state.role;
+
+    var gaps = gapSkills();
+    var acquiredCount = state.required.length - gaps.length;
+    var masteredCount = gaps.filter(function(id){ return skillStatus(id)==="mastered"; }).length;
+    var totalAcquired = acquiredCount + masteredCount;
+    var inProgressCount = gaps.filter(function(id){ return skillStatus(id)==="inprogress"; }).length;
+    var remainingCount = gaps.filter(function(id){ return skillStatus(id)==="remaining"; }).length;
+    var totalWeeks = gaps.length ? weekOf(gaps.length-1) : 0;
+    var pct = state.required.length ? Math.round((totalAcquired/state.required.length)*100) : 0;
+
+    document.getElementById("pathTitle").textContent = "Route to " + state.role;
+    document.getElementById("pathSub").textContent = state.required.length + " core skills mapped \u2022 " + gaps.length + " to build" + (totalWeeks ? " \u2022 about " + totalWeeks + " week" + (totalWeeks>1?"s":"") : "");
+    document.getElementById("elevFill").style.width = pct + "%";
+    document.getElementById("elevLabel").textContent = pct + "% of the route covered";
+
+    // trail
+    var trail = document.getElementById("trail");
+    trail.innerHTML = "";
+    state.required.forEach(function(id, idx){
+      var skill = SKILLS[id];
+      var status = skillStatus(id);
+      var wp = document.createElement("div");
+      wp.className = "waypoint " + status;
+      wp.dataset.id = id;
+
+      var hasChecklist = !!state.checklist[id];
+      var markerGlyph = (status==="acquired"||status==="mastered") ? "\u2713" : (idx+1);
+      var statusTagClass = (status==="acquired"||status==="mastered") ? "acquired-tag" : status==="inprogress" ? "progress-tag" : "remaining-tag";
+      var statusLabel = status==="acquired" ? "already have this" : status==="mastered" ? "mastered" : status==="inprogress" ? "in progress" : "not started";
+      var weekTag = hasChecklist ? '<div class="wp-week">Week '+weekOf(idx0(gaps,id))+'</div>' : "";
+
+      wp.innerHTML =
+        '<div class="marker">'+markerGlyph+'</div>'+
+        '<div class="wp-head">'+
+          '<div>'+
+            '<div class="wp-title">'+skill.name+'</div>'+
+            '<span class="wp-status '+statusTagClass+'">'+statusLabel+'</span>'+
+          '</div>'+
+          weekTag +
+        '</div>'+
+        '<div class="wp-body" id="body-'+id+'"></div>';
+
+      if(hasChecklist){
+        var body = wp.querySelector(".wp-body");
+        var c = state.checklist[id];
+        body.appendChild(checkRow(id,"r0", skill.res[0], c.r0));
+        body.appendChild(checkRow(id,"r1", skill.res[1], c.r1));
+        body.appendChild(checkRow(id,"t", skill.task, c.t, true));
+        wp.querySelector(".wp-head").addEventListener("click", function(){
+          wp.classList.toggle("open");
+        });
+      }
+      trail.appendChild(wp);
+    });
+
+    // report
+    document.getElementById("statAcquired").textContent = totalAcquired;
+    document.getElementById("statProgress").textContent = inProgressCount;
+    document.getElementById("statRemaining").textContent = remainingCount;
+
+    var nextList = document.getElementById("nextSteps");
+    nextList.innerHTML = "";
+    var candidates = gaps.filter(function(id){ var s=skillStatus(id); return s==="remaining"||s==="inprogress"; }).slice(0,2);
+    if(candidates.length === 0){
+      var li = document.createElement("li");
+      li.textContent = "Every core skill for this role is covered — try a harder target role or deepen a skill further.";
+      nextList.appendChild(li);
+    } else {
+      candidates.forEach(function(id){
+        var li = document.createElement("li");
+        li.textContent = SKILLS[id].name + " — " + SKILLS[id].task;
+        nextList.appendChild(li);
+      });
+    }
+
+    // chat log
+    var log = document.getElementById("chatLog");
+    log.innerHTML = "";
+    state.chat.slice(-8).forEach(function(pair){
+      var d = document.createElement("div");
+      d.className = "qa";
+      d.innerHTML = '<div class="q"></div><div class="a"></div>';
+      d.querySelector(".q").textContent = pair.q;
+      d.querySelector(".a").textContent = pair.a;
+      log.appendChild(d);
+    });
+    if(state.chat.length === 0){
+      log.innerHTML = '<p class="empty">Ask anything about your gaps, your current week, or a specific skill.</p>';
+    }
+
+    // suggestion chips
+    var chipRow = document.getElementById("chipRow");
+    chipRow.innerHTML = "";
+    ["What should I learn next?","What have I already got?","What's my week 1?","Suggest a project idea"].forEach(function(q){
+      var chip = document.createElement("button");
+      chip.className = "chip"; chip.type="button"; chip.textContent = q;
+      chip.addEventListener("click", function(){ askQuestion(q); });
+      chipRow.appendChild(chip);
+    });
+  }
+
+  function idx0(gaps,id){ return gaps.indexOf(id); }
+
+  function checkRow(skillId, key, label, checked, isTask){
+    var wrap = document.createElement("label");
+    wrap.className = "checkitem" + (isTask ? " task":"");
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = !!checked;
+    cb.addEventListener("change", function(){
+      state.checklist[skillId][key] = cb.checked;
+      saveState();
+      render();
+    });
+    var span = document.createElement("span");
+    if(isTask){
+      span.innerHTML = '<span class="lbl-tag">Practice task</span>' + label;
+    } else {
+      span.textContent = label;
+    }
+    wrap.appendChild(cb);
+    wrap.appendChild(span);
+    return wrap;
+  }
+
+  // ---------- ask ----------
+  function askQuestion(qRaw){
+    var q = qRaw.trim();
+    if(!q) return;
+    var lower = q.toLowerCase();
+    var gaps = gapSkills();
+    var answer = "";
+
+    // specific skill mention
+    var hitId = null;
+    Object.keys(SKILLS).forEach(function(id){
+      if(hitId) return;
+      SKILLS[id].alias.forEach(function(a){
+        if(lower.indexOf(a) !== -1) hitId = id;
+      });
+    });
+
+    if(hitId && state.required.indexOf(hitId) !== -1){
+      var st = skillStatus(hitId);
+      var sk = SKILLS[hitId];
+      if(st === "acquired"){
+        answer = sk.name + " is already marked as one of your current skills for this role.";
+      } else {
+        answer = sk.name + " is " + (st==="mastered"?"fully checked off":st==="inprogress"?"in progress":"not started yet") +
+          ". Resources: " + sk.res.join(" \u2014 ") + ". Practice task: " + sk.task;
+      }
+    } else if(/next|should i learn|what.?s left|start with/.test(lower)){
+      var cand = gaps.filter(function(id){ var s=skillStatus(id); return s!=="mastered"; }).slice(0,2);
+      answer = cand.length
+        ? "Next up: " + cand.map(function(id){return SKILLS[id].name;}).join(", ") + "."
+        : "You've covered every core skill for " + state.role + ".";
+    } else if(/already|have i got|acquired|know|strong/.test(lower)){
+      var have = state.required.filter(function(id){ return state.current[id]; });
+      var mastered = gaps.filter(function(id){ return skillStatus(id)==="mastered"; });
+      var all = have.concat(mastered);
+      answer = all.length
+        ? "You've got: " + all.map(function(id){return SKILLS[id].name;}).join(", ") + "."
+        : "Nothing's checked off yet \u2014 the route is still ahead of you.";
+    } else if(/gap|missing|weak|need to learn/.test(lower)){
+      var rem = gaps.filter(function(id){ return skillStatus(id)!=="mastered"; });
+      answer = rem.length
+        ? "Remaining gaps: " + rem.map(function(id){return SKILLS[id].name;}).join(", ") + "."
+        : "No gaps left \u2014 nicely done.";
+    } else if(/week ?1|week one|this week/.test(lower)){
+      var w1 = gaps.filter(function(id,i){ return weekOf(i)===1; });
+      answer = w1.length
+        ? "Week 1: " + w1.map(function(id){return SKILLS[id].name;}).join(" and ") + "."
+        : "Week 1 has nothing scheduled \u2014 those skills are already covered.";
+    } else if(/how many week|plan|timeline|how long/.test(lower)){
+      var tw = gaps.length ? weekOf(gaps.length-1) : 0;
+      answer = tw ? "The current route runs about " + tw + " week" + (tw>1?"s":"") + " at two skills per week." : "There's no route to run \u2014 every skill is covered.";
+    } else if(/project|practice|idea/.test(lower)){
+      var pick = gaps.filter(function(id){ return skillStatus(id)!=="mastered"; })[0];
+      answer = pick ? SKILLS[pick].name + " project: " + SKILLS[pick].task : "Pick any mastered skill and combine it with a new one for a stretch project.";
+    } else {
+      answer = "Try asking about a specific skill (\u201cwhere am I on SQL?\u201d), your gaps, your next step, or this week's focus.";
+    }
+
+    state.chat.push({q:q, a:answer});
+    saveState();
+    render();
+    document.getElementById("askInput").value = "";
+  }
+
+  // ---------- wire up ----------
+  window.addEventListener("DOMContentLoaded", function(){
+    populateRoleSelect();
+    state = loadState();
+    if(state){
+      document.getElementById("skillsInput").value = "";
+      render();
+    }
+
+    document.getElementById("buildBtn").addEventListener("click", buildPath);
+    document.getElementById("editBtn").addEventListener("click", function(){
+      document.getElementById("resultArea").scrollIntoView({behavior:"smooth"});
+      document.getElementById("skillsInput").focus();
+    });
+    document.getElementById("resetBtn").addEventListener("click", function(){
+      try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+      state = null;
+      document.getElementById("skillsInput").value = "";
+      document.getElementById("resumeInput").value = "";
+      document.getElementById("setupHint").textContent = "";
+      render();
+    });
+    document.getElementById("askBtn").addEventListener("click", function(){
+      askQuestion(document.getElementById("askInput").value);
+    });
+    document.getElementById("askInput").addEventListener("keydown", function(e){
+      if(e.key === "Enter") askQuestion(this.value);
+    });
+  });
+})();
+</script>
+</body>
+</html>
