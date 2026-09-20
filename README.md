@@ -1,6 +1,6 @@
 # EduPath — Personalized Learning & Skill-Gap Agent
 
-**Live demo:** https://claude.ai/artifact/2M6XwPSHzDG7Zn21jh11Mf
+**Live demo:** Open the `index.html` file
 
 ## Problem
 Learners know their target role but not the exact path to it — resources are scattered and most people follow a generic curriculum regardless of what they already know.
