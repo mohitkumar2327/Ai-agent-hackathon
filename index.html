@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPath — AI Learning Agent</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f6f8fc;color:#172033}
+button,input,select{font:inherit}.app{display:flex;min-height:100vh}.sidebar{width:245px;background:#111827;color:#fff;padding:24px 16px;position:fixed;height:100vh}.brand{font-size:22px;font-weight:800;margin:0 10px 28px}.brand span{color:#60a5fa}.nav button{width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:12px 14px;border-radius:10px;margin:3px 0;cursor:pointer}.nav button.active,.nav button:hover{background:#1f2937;color:#fff}.main{margin-left:245px;width:calc(100% - 245px);padding:30px;max-width:1400px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.top h1{margin:0;font-size:28px}.badge{background:#dbeafe;color:#1d4ed8;padding:8px 12px;border-radius:999px;font-size:13px;font-weight:700}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;box-shadow:0 3px 12px #00000008}.metric{font-size:30px;font-weight:800;margin-top:8px}.muted{color:#64748b;font-size:14px}.progress{height:9px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin-top:12px}.progress div{height:100%;background:#2563eb;border-radius:20px}.section{margin-top:22px}.section h2{font-size:19px;margin:0 0 14px}.two{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}.skill{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #eef2f7}.pill{font-size:12px;padding:5px 9px;border-radius:999px;font-weight:700}.green{background:#dcfce7;color:#166534}.yellow{background:#fef3c7;color:#92400e}.red{background:#fee2e2;color:#991b1b}.task{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #eef2f7}.task input{margin-top:4px;width:18px;height:18px}.btn{border:0;background:#2563eb;color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;cursor:pointer}.btn.secondary{background:#e8eefc;color:#1d4ed8}.upload{border:2px dashed #cbd5e1;padding:28px;text-align:center;border-radius:14px;background:#f8fafc}.form{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field label{display:block;font-weight:700;font-size:14px;margin-bottom:7px}.field input,.field select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:#fff}.full{grid-column:1/-1}.hidden{display:none}.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.week{border:1px solid #e5e7eb;border-radius:14px;padding:16px}.week h3{margin:0 0 8px}.chat{height:450px;display:flex;flex-direction:column}.messages{flex:1;overflow:auto;padding:10px;background:#f8fafc;border-radius:12px}.msg{max-width:75%;padding:11px 13px;border-radius:13px;margin:8px 0;line-height:1.4}.bot{background:#e5e7eb}.user{background:#2563eb;color:#fff;margin-left:auto}.chatbar{display:flex;gap:8px;margin-top:10px}.chatbar input{flex:1;padding:12px;border:1px solid #d1d5db;border-radius:10px}@media(max-width:900px){.sidebar{width:70px}.brand{font-size:0}.brand span{font-size:22px}.nav button{font-size:0}.nav button:first-letter{font-size:18px}.main{margin-left:70px;width:calc(100% - 70px)}.grid,.two,.roadmap,.form{grid-template-columns:1fr 1fr}}@media(max-width:600px){.main{padding:18px}.grid,.two,.roadmap,.form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">Edu<span>Path</span> ✦</div>
+  <div class="nav">
+    <button class="active" onclick="show('dashboard',this)">🏠 Dashboard</button>
+    <button onclick="show('profile',this)">👤 My Profile</button>
+    <button onclick="show('roadmap',this)">🗺 Roadmap</button>
+    <button onclick="show('practice',this)">📝 Practice</button>
+    <button onclick="show('coach',this)">🤖 AI Coach</button>
+    <button onclick="show('report',this)">📊 Progress Report</button>
+  </div>
+</aside>
+
+<main class="main">
+<section id="dashboard" class="page">
+<div class="top"><div><h1>Good morning, Learner 👋</h1><p class="muted">Your personalized path to becoming a Data Analyst.</p></div><span class="badge">AI Agent Active</span></div>
+<div class="grid">
+<div class="card"><span class="muted">Overall Progress</span><div class="metric">42%</div><div class="progress"><div style="width:42%"></div></div></div>
+<div class="card"><span class="muted">Skills Acquired</span><div class="metric">7</div><span class="muted">of 16 target skills</span></div>
+<div class="card"><span class="muted">Learning Streak</span><div class="metric">6 🔥</div><span class="muted">days</span></div>
+<div class="card"><span class="muted">Current Level</span><div class="metric">Intermediate</div><span class="muted">AI assessed</span></div>
+</div>
+<div class="section two">
+<div class="card"><h2>Skill Gap Analysis</h2>
+<div class="skill"><span>Python</span><span class="pill green">Strong</span></div>
+<div class="skill"><span>SQL</span><span class="pill green">Strong</span></div>
+<div class="skill"><span>Excel</span><span class="pill yellow">Improve</span></div>
+<div class="skill"><span>Statistics</span><span class="pill red">Gap</span></div>
+<div class="skill"><span>Power BI</span><span class="pill red">Gap</span></div>
+<div class="skill"><span>Pandas / EDA</span><span class="pill yellow">Improve</span></div>
+</div>
+<div class="card"><h2>This Week's Plan</h2>
+<div class="task"><input type="checkbox" onchange="updateProgress(this)"><div><b>SQL Window Functions</b><div class="muted">45 min · High priority</div></div></div>
+<div class="task"><input type="checkbox" onchange="updateProgress(this)"><div><b>Excel Pivot Tables</b><div class="muted">30 min · Medium</div></div></div>
+<div class="task"><input type="checkbox" onchange="updateProgress(this)"><div><b>Pandas Data Cleaning</b><div class="muted">60 min · High priority</div></div></div>
+<button class="btn" onclick="show('roadmap')">View full roadmap →</button>
+</div></div>
+</section>
+
+<section id="profile" class="page hidden">
+<div class="top"><div><h1>Build Your Learning Profile</h1><p class="muted">Give EduPath your current skills and target role.</p></div></div>
+<div class="card">
+<div class="upload">📄 <b>Upload Resume</b><p class="muted">PDF, DOCX · AI will extract skills, projects and experience</p><input type="file" id="resume"></div>
+<br><div class="form">
+<div class="field"><label>Target Role</label><select id="role"><option>Data Analyst</option><option>Data Scientist</option><option>Business Analyst</option><option>Frontend Developer</option><option>Backend Developer</option></select></div>
+<div class="field"><label>Experience Level</label><select><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></div>
+<div class="field full"><label>Current Skills</label><input id="skills" value="Python, SQL, Excel, HTML, CSS, JavaScript"></div>
+<div class="field full"><label>Career Goal</label><input value="Get a Data Analyst job in an MNC within 6 months"></div>
+</div><br>
+<button class="btn" onclick="analyze()">✨ Analyze My Skill Gap</button>
+<div id="analysis" class="hidden" style="margin-top:20px">
+<div class="card" style="background:#f8fafc"><h2>AI Analysis Complete ✓</h2><p>EduPath found <b>5 priority gaps</b> for the Data Analyst role. Your roadmap has been updated.</p><div class="progress"><div style="width:62%"></div></div><p class="muted">Role readiness: 62%</p></div>
+</div></div>
+</section>
+
+<section id="roadmap" class="page hidden">
+<div class="top"><div><h1>Personalized Roadmap</h1><p class="muted">Generated from your profile and target role.</p></div><span class="badge">12 Weeks</span></div>
+<div class="roadmap">
+<div class="week"><h3>Week 1–2</h3><p><b>Advanced SQL</b></p><p class="muted">Window functions · CTEs · Subqueries · 25 practice problems</p><span class="pill green">Completed 80%</span></div>
+<div class="week"><h3>Week 3–4</h3><p><b>Excel Analytics</b></p><p class="muted">Pivot tables · XLOOKUP · Dashboards · Cleaning</p><span class="pill yellow">In Progress</span></div>
+<div class="week"><h3>Week 5–6</h3><p><b>Python for Analytics</b></p><p class="muted">Pandas · NumPy · Data cleaning · EDA</p><span class="pill yellow">Upcoming</span></div>
+<div class="week"><h3>Week 7–8</h3><p><b>Statistics</b></p><p class="muted">Probability · distributions · hypothesis testing</p><span class="pill red">Gap</span></div>
+<div class="week"><h3>Week 9–10</h3><p><b>Power BI</b></p><p class="muted">Data modeling · DAX · Interactive dashboards</p><span class="pill red">Gap</span></div>
+<div class="week"><h3>Week 11–12</h3><p><b>Portfolio Project</b></p><p class="muted">End-to-end business analytics project + interview prep</p><span class="pill red">Gap</span></div>
+</div>
+</section>
+
+<section id="practice" class="page hidden">
+<div class="top"><div><h1>Practice Center</h1><p class="muted">Tasks generated according to your current gaps.</p></div></div>
+<div class="card"><h2>Today's AI-generated tasks</h2>
+<div class="task"><input type="checkbox" onchange="alert('Great! Task completed. EduPath will update your roadmap.')"><div><b>SQL Challenge</b><p>Write a query using ROW_NUMBER() to find the top 3 products per category.</p><span class="pill red">Hard</span></div></div>
+<div class="task"><input type="checkbox"><div><b>Statistics Quiz</b><p>Answer 10 questions on mean, variance, standard deviation and distributions.</p><span class="pill yellow">Medium</span></div></div>
+<div class="task"><input type="checkbox"><div><b>Mini Project</b><p>Analyze a retail dataset and produce 5 business insights using Pandas.</p><span class="pill yellow">Medium</span></div></div>
+</div></section>
+
+<section id="coach" class="page hidden">
+<div class="top"><div><h1>AI Learning Coach 🤖</h1><p class="muted">Ask anything about your learning journey.</p></div></div>
+<div class="card chat"><div class="messages" id="messages"><div class="msg bot">Hey! I'm your EduPath coach. Ask me what to learn next, explain a topic, or help with your roadmap.</div></div><div class="chatbar"><input id="chatInput" placeholder="e.g. What should I learn this week?"><button class="btn" onclick="chat()">Send</button></div></div>
+</section>
+
+<section id="report" class="page hidden">
+<div class="top"><div><h1>Progress Report</h1><p class="muted">AI-generated weekly summary.</p></div><button class="btn secondary" onclick="alert('Report exported for the demo.')">Export Report</button></div>
+<div class="grid">
+<div class="card"><span class="muted">Skills Acquired</span><div class="metric">7</div></div>
+<div class="card"><span class="muted">In Progress</span><div class="metric">4</div></div>
+<div class="card"><span class="muted">Remaining Gaps</span><div class="metric">5</div></div>
+<div class="card"><span class="muted">Weekly Completion</span><div class="metric">78%</div></div>
+</div>
+<div class="section card"><h2>AI Recommendations</h2><ul><li>Practice SQL window functions for another 2 sessions.</li><li>Start Power BI after completing the current Excel module.</li><li>Build one EDA project before beginning interview preparation.</li><li>Your statistics gap is currently the highest priority.</li></ul></div>
+</section>
+</main>
+</div>
+<script>
+function show(id,btn){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active')}
+function analyze(){document.getElementById('analysis').classList.remove('hidden');alert('AI Agent analyzed the profile and generated a personalized skill-gap plan.')}
+function updateProgress(el){if(el.checked) alert('Completed! EduPath will adapt your next tasks.')}
+function chat(){let input=document.getElementById('chatInput'),v=input.value.trim();if(!v)return;let box=document.getElementById('messages');box.innerHTML+=`<div class="msg user">${v}</div>`;let reply='Based on your current Data Analyst roadmap, focus on SQL and Pandas first. Complete the assigned practice task, then I will recommend the next step.';if(/power bi/i.test(v))reply='You should start Power BI after your current Excel module. Learn data modeling, relationships, basic DAX, then build one dashboard.';if(/sql/i.test(v))reply='Your SQL is already strong. Spend this week on CTEs, window functions and complex joins, followed by 20–25 practice problems.';if(/next/i.test(v))reply='Your next priority is Advanced SQL → Pandas/EDA → Statistics → Power BI. I will reorder these if your progress shows a weakness.';setTimeout(()=>{box.innerHTML+=`<div class="msg bot">${reply}</div>`;box.scrollTop=box.scrollHeight},300);input.value=''}
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')chat()});
+</script>
+</body>
+</html>
